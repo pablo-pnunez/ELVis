@@ -758,11 +758,17 @@ class ImgModel(ModelClass):
 
         random_cols = [col for col in ret10.columns if 'rnd_pos_' in col]
 
+        rnd = 0
+        cnt = 0
+        mdl = 0
+
+        n_test_items = len(ret_f)
+
         for p in positions:
-            rnd = np.average(np.sum(ret_f[random_cols] == p))
-            cnt = len(ret_f.loc[ret_f.cnt_pos == p])
-            mdl = len(ret_f.loc[ret_f.model_pos == p])
-            print("%d\t%f\t%d\t%d" % (p, rnd, cnt, mdl))
+            rnd += np.average(np.sum(ret_f[random_cols] == p))
+            cnt += len(ret_f.loc[ret_f.cnt_pos == p])
+            mdl += len(ret_f.loc[ret_f.model_pos == p])
+            print("%d\t%f\t%f\t%f" % (p, rnd/n_test_items, cnt/n_test_items, mdl/n_test_items))
 
         print("-" * 100)
 
@@ -772,19 +778,19 @@ class ImgModel(ModelClass):
 
         # -----------------------------------------------------------------------------------------------------------
 
-        self.config_session()  # Configurar y crear sesion
+        self.config_session()  # Configure and create session
 
         preds = self.test()
         urls = self.DATA["URLS"]
         original_train = get_pickle(self.DATA_PATH + "original_take/", "TRAIN_DEV")
 
-        # Añadir las imágenes a TRAIN
+        # Adding images to TRAIN set
         original_train = original_train.merge(self.DATA["IMG"][["review", "id_img"]], left_on="reviewId",
                                               right_on="review")
         original_train = original_train.drop(columns=['review'])
 
         # -----------------------------------------------------------------------------------------------------------
-        # Eliminar los restaurantes que tengan menos de 10 imágenes en el test (son faciles de acertar)
+        # Drop restaurants with less than 10 images in test (easy to guess)
         # -----------------------------------------------------------------------------------------------------------
 
         rsts = original_train.groupby("id_restaurant").id_img.count().reset_index(name="n_images")
@@ -792,7 +798,7 @@ class ImgModel(ModelClass):
         preds = preds.loc[preds.id_restaurant.isin(rsts)]
 
         # -----------------------------------------------------------------------------------------------------------
-        # Eliminar los usuarios que tengan menos de 10 fotos en train (se sabe poco de ellos)
+        # Drop users with less than 10 images in train (poor knownledge about them)
         # -----------------------------------------------------------------------------------------------------------
 
         # usrs = original_train.groupby("id_user").id_img.count().reset_index(name="n_images")
@@ -809,24 +815,24 @@ class ImgModel(ModelClass):
 
             n_imgs = 11
 
-            # Ordenar la predicción del restaurante concreto
+            # Ordering the prediction of the particular restaurant
             mdl = mdl.sort_values("prediction", ascending=False).reset_index(drop=True)
 
-            # Obtener el orden del centroide
+            # Order using the centroid
             cnt = self.centroid_baseline(restaurant=mdl.id_restaurant.values[0], id_test=i)
 
-            # Obtener las urls del grupo concreto ordenadas según predicción
+            # Obtaining the image urls
             mdl_urls = urls.iloc[mdl.id_img.values, :].url.values
             cnt_urls = urls.iloc[cnt.id_img.values, :].url.values
 
             mdl_pos = mdl.loc[mdl.is_dev == 1].index.values[0]
             cnt_pos = cnt.loc[cnt.is_dev == 1].index.values[0]
 
-            # Datos del usuario en train
+            # User data in TRAIN
             usr_train = original_train.loc[original_train.id_user == mdl.id_user.values[0]]
             usr_urls = urls.iloc[usr_train.id_img.unique(), :].url.values
 
-            # Crear plot
+            # Plot creation
             filas_usr = int(np.ceil(len(usr_urls) / n_imgs))
             filas_mdl = int(np.ceil(len(mdl_urls) / n_imgs))
             filas_cnt = int(np.ceil(len(cnt_urls) / n_imgs))
@@ -842,7 +848,7 @@ class ImgModel(ModelClass):
             os.makedirs(top_model_path, exist_ok=True)
             os.makedirs(top_centr_path, exist_ok=True)
 
-            # Fotos postivas del usuario en TRAIN
+            # Positive user images in TRAIN
             for j in range(len(usr_urls)):
                 f = int(np.ceil((j + 1) / n_imgs)) - 1
 
@@ -851,23 +857,23 @@ class ImgModel(ModelClass):
 
                 ax[f, j % n_imgs].imshow(get_img(img_url, save=img_path), cmap='seismic', interpolation='bilinear')
 
-            # Fotos del Modelo
+            # Model images
             for j in range(len(mdl_urls)):
 
                 f = filas_usr + (int(np.ceil((j + 1) / n_imgs)) - 1)
 
                 img_url = mdl_urls[j]
                 img_path = top_model_path + (str(j + 1).zfill(3) + ".jpg")
-                if (j == mdl_pos): img_path = top_model_path + (str(j + 1).zfill(3) + "_dev.jpg")
+                if j == mdl_pos: img_path = top_model_path + (str(j + 1).zfill(3) + "_dev.jpg")
 
                 ax[f, j % n_imgs].imshow(get_img(img_url, save=img_path), cmap='seismic', interpolation='bilinear')
 
-                if (j == mdl_pos):
+                if j == mdl_pos:
                     ax[f, j % n_imgs].set_title('DEV', color="red")
                 else:
                     ax[f, j % n_imgs].set_title(str(j + 1))
 
-            # Fotos del Centroide
+            # Centroid images
             for j in range(len(cnt_urls)):
 
                 f = filas_usr + filas_mdl + (int(np.ceil((j + 1) / n_imgs)) - 1)
@@ -883,7 +889,7 @@ class ImgModel(ModelClass):
                 else:
                     ax[f, j % n_imgs].set_title(str(j + 1))
 
-            # Quitar los ejes:
+            # Remove axis:
             [axi.set_axis_off() for axi in ax.ravel()]
 
             plt.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.1, wspace=0.02, hspace=0.45)
@@ -891,50 +897,50 @@ class ImgModel(ModelClass):
 
     def most_popular_in_rest(self, restaurant=0, users="all"):
 
-        self.config_session()  # Configurar y crear sesion
+        self.config_session()  # Configuring and creating session
 
         original_train = get_pickle(self.DATA_PATH + "original_take/", "TRAIN_DEV")
 
-        # Añadir las imágenes a TRAIN
+        # Adding images to TRAIN set
         original_train = original_train.merge(self.DATA["IMG"][["review", "id_img"]], left_on="reviewId",
                                               right_on="review")
         original_train = original_train.drop(columns=['review'])
 
-        # Obtener los datos concretos
+        # Obtening particular data
         rst_data = original_train.loc[original_train.id_restaurant == restaurant]
 
         if "all" in users:
-            users = list(range(self.DATA["N_USR"]))  # Todos los usuarios
+            users = list(range(self.DATA["N_USR"]))  # All the users
         elif "own" in users:
-            users = rst_data.id_user.unique()  # Solo users del restaurante
+            users = rst_data.id_user.unique()  # Only restaurant users
         elif "pos" in users:
             users = rst_data.loc[
-                rst_data.like == 1].id_user.unique()  # Solo users del restaurante con reviews positivas
+                rst_data.like == 1].id_user.unique()  # Only restaurant users with positive reviews
         elif "neg" in users:
             users = rst_data.loc[
-                rst_data.like == 0].id_user.unique()  # Solo users del restaurante con reviews negativas
+                rst_data.like == 0].id_user.unique()  # Only restaurant users with negative reviews
 
         images = rst_data.id_img.unique()
 
-        # Crear conjunto para evaluar
+        # Creation of the evaluation set
         data = pd.DataFrame()
         data["id_user"] = np.repeat(users, len(images))
         data["id_img"] = np.reshape([images] * len(users), -1)
 
-        if (not os.path.exists(self.MODEL_PATH)): print_e("The model doesn't exist."); exit()
+        if not os.path.exists(self.MODEL_PATH): print_e("The model doesn't exist."); exit()
         model_take = load_model(self.MODEL_PATH + "/model_1")
 
         sequence = self.DevSequenceTake(data=data, batch_size=min(2 ** 14, len(data)), model=self)
         data["pred"] = model_take.predict_generator(sequence, steps=sequence.__len__())
 
-        # Agrupar por foto y sumar probabilidades
+        # Group by image and sum probabilities
         data_g = data.groupby("id_img").pred.mean().reset_index(name="pred")
         data_g = data_g.sort_values("pred", ascending=False).reset_index(drop=True)
 
         min_items = 30
         rows = 3
 
-        if (len(data_g) < min_items):
+        if len(data_g) < min_items:
             print_e("Only %d photos. %d required." % (len(data_g), min_items))
             exit()
 
@@ -959,7 +965,7 @@ class ImgModel(ModelClass):
 
             if (i + 1 == min_items): break
 
-        # Quitar los ejes:
+        # Remove the axis
         [axi.set_axis_off() for axi in ax.ravel()]
 
         plt.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.1, wspace=0.02, hspace=0.0)
@@ -1059,11 +1065,11 @@ class ImgModel(ModelClass):
 
         data = pd.read_excel("docs/" + self.MODEL_NAME + "_" + self.CITY + "_TAKE.xlsx")  # Por usuario
 
-        filter = True
-        if (filter):
-            # Eliminar los restaurantes que tengan menos de 10 imágenes en el test (son faciles de acertar)
+        apply_filter = True
+        if apply_filter:
+            # Drop restaurants with less than 10 images in test (easy to guess)
             data = data.loc[(data["n_photos_x"] >= 10)]
-            # Eliminar los usuarios que tengan menos de 10 fotos en train (se sabe poco de ellos)
+            # Drop users with less than 10 images in train (poor knownledge about them)
             data = data.loc[(data["n_photos_train"] >= 10)]
 
         cols = ["model_pos", "cnt_pos", 'rnd_pos_0', 'rnd_pos_1', 'rnd_pos_2', 'rnd_pos_3', 'rnd_pos_4', 'rnd_pos_5',
@@ -1099,4 +1105,4 @@ class ImgModel(ModelClass):
         ret["cnt_pos_p@%"] = ret["cnt_pos_p@"] / len(data)
         ret["rnd_pos_p@%"] = ret["rnd_pos_p@"] / len(data)
 
-        ret.to_excel("docs/" + self.CITY + "_p@" + ("_all" if not filter else "") + ".xlsx")
+        ret.to_excel("docs/" + self.CITY + "_p@" + ("_all" if not apply_filter else "") + ".xlsx")
