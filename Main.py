@@ -57,7 +57,6 @@ config = {
 
 ########################################################################################################################
 
-
 model = ImgModel(city=city, config=config, seed=seed)
 
 if "stats" in stage:
@@ -72,7 +71,7 @@ if "train" in stage:
 
 if "test" in stage:
 
-    #model.get_detailed_results()
+    model.get_detailed_results()
 
     if "barcelona" in city.lower():
         model.get_sample_ranking()
@@ -80,5 +79,5 @@ if "test" in stage:
     if "gijon" in city.lower():
         rst_id = 249  # El perro que fuma
 
-        model.most_popular_in_rest(rst_id, users="all")
-        model.most_popular_in_rest(rst_id, users="own")
+        model.most_popular_in_rest(rst_id, which_users="all")
+        model.most_popular_in_rest(rst_id, which_users="own")

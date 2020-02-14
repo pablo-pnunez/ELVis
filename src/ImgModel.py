@@ -8,10 +8,8 @@ import itertools as it
 import requests
 from PIL import Image
 from io import BytesIO
-from tqdm import tqdm
 import pandas as pd
 from scipy import spatial
-from sklearn import utils
 import keras
 from keras import backend as K
 from keras.optimizers import Adam
@@ -895,7 +893,7 @@ class ImgModel(ModelClass):
             plt.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.1, wspace=0.02, hspace=0.45)
             plt.show()
 
-    def most_popular_in_rest(self, restaurant=0, users="all"):
+    def most_popular_in_rest(self, restaurant=0, which_users="all"):
 
         self.config_session()  # Configuring and creating session
 
@@ -906,23 +904,23 @@ class ImgModel(ModelClass):
                                               right_on="review")
         original_train = original_train.drop(columns=['review'])
 
-        # Obtening particular data
+        # Obtaining restaurant data
         rst_data = original_train.loc[original_train.id_restaurant == restaurant]
 
-        if "all" in users:
+        if "all" in which_users:
             users = list(range(self.DATA["N_USR"]))  # All the users
-        elif "own" in users:
+        elif "own" in which_users:
             users = rst_data.id_user.unique()  # Only restaurant users
-        elif "pos" in users:
+        elif "pos" in which_users:
             users = rst_data.loc[
                 rst_data.like == 1].id_user.unique()  # Only restaurant users with positive reviews
-        elif "neg" in users:
+        elif "neg" in which_users:
             users = rst_data.loc[
                 rst_data.like == 0].id_user.unique()  # Only restaurant users with negative reviews
 
         images = rst_data.id_img.unique()
 
-        # Creation of the evaluation set
+        # Creation of the evaluation set (all users evaluate all images)
         data = pd.DataFrame()
         data["id_user"] = np.repeat(users, len(images))
         data["id_img"] = np.reshape([images] * len(users), -1)
@@ -947,7 +945,7 @@ class ImgModel(ModelClass):
         best_img = data_g.id_img.values[0]
         best_url = self.DATA["IMG"].iloc[best_img].url
 
-        popular_path = "imgs/%s/%d/popular_%s/" % (self.CITY, restaurant, users)
+        popular_path = "imgs/%s/%d/popular_%s/" % (self.CITY, restaurant, which_users)
         os.makedirs(popular_path, exist_ok=True)
 
         # Plot
