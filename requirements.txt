@@ -29,7 +29,7 @@ kiwisolver==1.1.0
 Markdown==3.2
 MarkupSafe==1.1.1
 matplotlib==3.1.3
-numpy==1.18.1
+numpy==1.22.0
 nvgpu==0.8.0
 oauthlib==3.1.0
 opencv-python==4.2.0.32
