@@ -5,7 +5,7 @@ To illustrate the proposal, we use data gathered from TripAdvisor containing the
 
 ## Setup
 
-### Enviroment
+### Environment
 
 * `conda env create -f environment.yml`
 
