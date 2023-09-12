@@ -9,21 +9,23 @@ To illustrate the proposal, we use data gathered from TripAdvisor containing the
 
 * `conda env create -f environment.yml`
 
-### Run pre-trained models
+
+### Option 1. Run pre-trained models
 
 In order to run pre-trained models you have to:
- 1. Download the pretrained models from: https://www.aic.uniovi.es/downloadables/ELVis/models.zip
- 2. Create a folder called "models" (if not exists).
- 3. Unzip the compressed files under `models/` path.
- 4. Run the `Main.py` file with `stage='test'` or `stage='stats'` and  `city='<city>'` (view parameters section). 
+ 1. Download a city data from: https://www.aic.uniovi.es/mlgroup/repository/elvis/
+ 2. Create a new folder called "data" (If it does not exist) and inside, another with the name of the city.
+ 3. Unzip the files under `data/<city>/` path.
+ 4. Download the pre-trained models from: https://www.aic.uniovi.es/downloadables/ELVis/models.zip
+ 5. Create a folder called "models" (If it does not exist).
+ 6. Unzip the compressed files under `models/` path.
+ 7. Run the `Main.py` file with `stage='test'` or `stage='stats'` and  `city='<city>'` (view parameters section). 
 
-### Train the model with pre-generated data
+### Option 2. Train the model with pre-generated data
 
 In this case, you need to follow these steps:
- 1. Download a city data from: https://www.aic.uniovi.es/mlgroup/repository/elvis/
- 2. Create a new folder called "data" (if not exists) and iside, another with the name of the city.
- 3. Unzip the files under `data/<city>/` path.
- 4. Run the `Main.py` file with `stage='grid'` or `stage='train'` and  `city='<city>'` (view parameters section). 
+ 1. Download city data as in Option 1.
+ 2. Run the `Main.py` file with `stage='grid'` or `stage='train'` and  `city='<city>'` (view parameters section). 
 
 ## Parameters
 
