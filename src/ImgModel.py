@@ -1004,7 +1004,7 @@ class ImgModel(ModelClass):
             return ret_dict
 
         else:
-            print_e("Data incomplete or nonexistent")
+            print_e(f"Data incomplete or nonexistent in '{file_path}'.")
             exit()
 
     def get_data_stats(self):

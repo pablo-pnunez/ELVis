@@ -36,7 +36,7 @@ args = cmd_read_args()
 
 stage = "test" if args.stage is None else args.stage
 
-gpu = np.argmin(list(map(lambda x: x["mem_used_percent"], nvgpu.gpu_info()))) if args.gpu is None else args.gpu
+gpu = 0 # np.argmin(list(map(lambda x: x["mem_used_percent"], nvgpu.gpu_info()))) if args.gpu is None else args.gpu
 
 lrates = [5e-4] if args.lr is None else args.lr
 dpouts = [0.2] if args.d is None else args.d

@@ -7,8 +7,7 @@ To illustrate the proposal, we use data gathered from TripAdvisor containing the
 
 ### Enviroment
 
-* python3.6  
-* Install `requirements.txt`
+* `conda env create -f environment.yml`
 
 ### Run pre-trained models
 
@@ -21,7 +20,7 @@ In order to run pre-trained models you have to:
 ### Train the model with pre-generated data
 
 In this case, you need to follow these steps:
- 1. Download a city data from: https://dx.doi.org/10.34740/kaggle/dsv/944945
+ 1. Download a city data from: https://www.aic.uniovi.es/mlgroup/repository/elvis/
  2. Create a new folder called "data" (if not exists) and iside, another with the name of the city.
  3. Unzip the files under `data/<city>/` path.
  4. Run the `Main.py` file with `stage='grid'` or `stage='train'` and  `city='<city>'` (view parameters section). 
