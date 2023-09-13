@@ -13,7 +13,13 @@ To illustrate the proposal, we use data gathered from TripAdvisor containing the
 ### Option 1. Run pre-trained models
 
 In order to run pre-trained models you have to:
- 1. Download a city data from: https://www.aic.uniovi.es/mlgroup/repository/elvis/
+ 1. Download city data: 
+    * [Gijon](https://www.aic.uniovi.es/downloadables/ELVis/gijon.zip)
+    * [Madrid](https://www.aic.uniovi.es/downloadables/ELVis/madrid.zip)
+    * [Barcelona](https://www.aic.uniovi.es/downloadables/ELVis/barcelona.zip)
+    * [Paris](https://www.aic.uniovi.es/downloadables/ELVis/paris.zip)
+    * [New York City](https://www.aic.uniovi.es/downloadables/ELVis/newyorkcity.zip)
+    * [London](https://www.aic.uniovi.es/downloadables/ELVis/london.zip)
  2. Create a new folder called "data" (If it does not exist) and inside, another with the name of the city.
  3. Unzip the files under `data/<city>/` path.
  4. Download the pre-trained models from: https://www.aic.uniovi.es/downloadables/ELVis/models.zip
