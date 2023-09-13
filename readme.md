@@ -13,7 +13,7 @@ To illustrate the proposal, we use data gathered from TripAdvisor containing the
 ### Option 1. Run pre-trained models
 
 In order to run pre-trained models you have to:
- 1. Download city data: 
+ 1. Download preprocessed city data: 
     * [Gijon](https://www.aic.uniovi.es/downloadables/ELVis/gijon.zip)
     * [Madrid](https://www.aic.uniovi.es/downloadables/ELVis/madrid.zip)
     * [Barcelona](https://www.aic.uniovi.es/downloadables/ELVis/barcelona.zip)
