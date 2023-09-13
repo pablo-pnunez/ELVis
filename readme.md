@@ -22,7 +22,7 @@ In order to run pre-trained models you have to:
     * [London](https://www.aic.uniovi.es/downloadables/ELVis/london.zip)
  2. Create a new folder called "data" (If it does not exist) and inside, another with the name of the city.
  3. Unzip the files under `data/<city>/` path.
- 4. Download the pre-trained models from: https://www.aic.uniovi.es/downloadables/ELVis/models.zip
+ 4. Download the pre-trained models from [here](https://www.aic.uniovi.es/downloadables/ELVis/models.zip).
  5. Create a folder called "models" (If it does not exist).
  6. Unzip the compressed files under `models/` path.
  7. Run the `Main.py` file with `stage='test'` or `stage='stats'` and  `city='<city>'` (view parameters section). 
@@ -49,6 +49,8 @@ You can configure:
 * **epochs:** Epoch number
 * **seed:** Random state
 
+## Raw data
+The data from all the cities without preprocessing can be downloaded from [here](https://zenodo.org/record/5644892).
 
 ## Citation
 
